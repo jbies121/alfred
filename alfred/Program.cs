@@ -20,7 +20,7 @@ namespace alfred
         // Keep the CommandService and DI container around for use with commands.
         // These two types require you install the Discord.Net.Commands package.
         private readonly CommandService _commands;
-        private readonly IServiceProvider _services;
+        private readonly IServiceProvider? _services;
 
         private Program()
         {
