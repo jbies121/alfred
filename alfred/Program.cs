@@ -58,7 +58,7 @@ namespace alfred
             _commands.Log += Log;
 
             // Setup your DI container.
-            _services = ConfigureServices();
+            //_services = ConfigureServices();
         }
 
         // If any services require the client, or the CommandService, or something else you keep on hand,
@@ -137,7 +137,7 @@ namespace alfred
             // so make sure that's done before you get here.
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
             // Or add Modules manually if you prefer to be a little more explicit:
-            await _commands.AddModuleAsync<SomeModule>(_services);
+            //await _commands.AddModuleAsync<SomeModule>(_services);
             // Note that the first one is 'Modules' (plural) and the second is 'Module' (singular).
 
             // Subscribe a handler to see if a message invokes a command.
