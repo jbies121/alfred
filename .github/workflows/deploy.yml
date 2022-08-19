@@ -4,18 +4,15 @@ on:
   push:
     branches: [ "main" ]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Make artifact directory
+- name: Make artifact directory
     run: mkdir -p ./artifacts/${{ github.repository }}
-    - name: Create Zip File
+
+- name: Create Zip File
     uses: montudor/action-zip@v0.1.0
     with:
-    args: zip -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip ./alfred
-    - name: Push Zip to S3
+    args: zip -r ./artifacts/${{ github.repository }}/${{ github.sha }}.zip ./src
+
+- name: Push Zip to S3
     uses: jakejarvis/s3-sync-action@v0.3.1
     env:
     SOURCE_DIR: './artifacts'
