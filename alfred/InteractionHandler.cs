@@ -32,6 +32,7 @@ namespace alfred
         {
             try
             {
+                // https://discord.com/developers/docs/interactions/receiving-and-responding#security-and-authorization
                 var ctx = new SocketInteractionContext(_client, arg);
                 await _commands.ExecuteCommandAsync(ctx, _services);
             }
