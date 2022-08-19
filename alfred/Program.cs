@@ -44,7 +44,6 @@ namespace alfred
                             )
                             .AddSingleton<InteractionHandler>()
                             .AddSingleton(x => new CommandService())
-                            .AddSingleton<PrefixHandler>()
                 )
                 .Build();
             await RunAsync(host);
@@ -59,9 +58,6 @@ namespace alfred
             var sCommands = provider.GetRequiredService<InteractionService>();
             await provider.GetRequiredService<InteractionHandler>().InitializeAsync();
             var config = provider.GetRequiredService<IConfigurationRoot>();
-            var pCommands = provider.GetRequiredService<PrefixHandler>();
-            pCommands.AddModule<alfred.Modules.PrefixModule>();
-            await pCommands.InitializeAsync();
 
             _client.Log += async (LogMessage msg) =>
             {
