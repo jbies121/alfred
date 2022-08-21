@@ -5,10 +5,18 @@ namespace alfred.Modules
 {
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
-        [SlashCommand("slap", "Receive a ping message.")]
+        [SlashCommand("slap", "Remind Alfred who the real Bat- I mean Man of the house is..")]
         public async Task HandleSlapCommand()
         {
             await RespondAsync("Oh! Very sorry, Master Wayne. \U0001F97A");
+        }
+
+        [SlashCommand("calendar", "Alfred, fetch the Bat- I mean the calendar..")]
+        public async Task HandleCalendarCommand()
+        {
+            await RespondAsync(
+                "Oh! Very sorry, Master Wayne, but the google interaction isn't ready quite yet. \U0001F97A"
+            );
         }
     }
 }
