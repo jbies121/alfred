@@ -18,5 +18,13 @@ namespace alfred.Modules
                 "Oh! Very sorry, Master Wayne, but the google interaction isn't ready quite yet. \U0001F97A"
             );
         }
+
+        [SlashCommand("session", "Alfred, I want to play with my friends.")]
+        public async Task HandleSessionCommand()
+        {
+            await RespondAsync(
+                "Oh! Very sorry, Master Wayne, but the Discord Event feature isn't ready quite yet. \U0001F97A"
+            );
+        }
     }
 }
