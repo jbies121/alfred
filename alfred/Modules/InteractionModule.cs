@@ -19,7 +19,7 @@ namespace alfred.Modules
             );
         }
 
-        [SlashCommand("session", "Alfred, I want to play with my friends.")]
+        [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
         public async Task HandleSessionCommand()
         {
             await RespondAsync(
