@@ -1,5 +1,6 @@
 using Discord.Interactions;
 using Discord;
+using Discord.WebSocket;
 
 namespace alfred.Modules
 {
