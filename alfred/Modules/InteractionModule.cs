@@ -20,24 +20,10 @@ namespace alfred.Modules
         }
 
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
-        public async Task HandleSessionCommand()
+        public async Task HandleSessionCommand(string name, DateTime start)
         {
-                await RespondWithModalAsync<SessionModal>("eventName");
-        }
-
-        [ModalInteraction("eventName")]
-        public async Task HandleSessionNameInput(SessionModal modal)
-        {
-            string input = modal.SessionName;
-            await RespondAsync(input);
+                string Response = "Event Received: " + name + " - " + start;
+                await RespondAsync(Response);
         }
     }
-
-    public class SessionModal : IModal
-        {
-            public string Title => "Session Modal";
-            [InputLabel("Session Name:")]
-            [ModalTextInput("eventName", TextInputStyle.Short, placeholder: "Session Name as shown in-game", maxLength: 50)]
-            public string SessionName { get; set; }
-        }
 }
