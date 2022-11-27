@@ -22,9 +22,22 @@ namespace alfred.Modules
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
         public async Task HandleSessionCommand()
         {
-            await RespondAsync(
-                "Oh! Very sorry, Master Wayne, but the Discord Event feature isn't ready quite yet. \U0001F97A"
-            );
+                await RespondWithModalAsync<SessionModal>("eventName");
+        }
+
+        [ModalInteraction("eventName")]
+        public async Task HandleSessionNameInput(SessionModal modal)
+        {
+            string input = modal.SessionName;
+            await RespondAsync(input);
         }
     }
+
+    public class SessionModal : IModal
+        {
+            public string Title => "Session Modal";
+            [InputLabel("Session Name:")]
+            [ModalTextInput("eventName", TextInputStyle.Short, placeholder: "Session Name as shown in-game", maxLength: 50)]
+            public string SessionName { get; set; }
+        }
 }
