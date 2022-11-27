@@ -36,12 +36,14 @@ namespace alfred.Modules
         }
 
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
-        public async Task HandleSessionCommand(string name, DateTime start)
+        public async Task HandleSessionCommand(string name, DateTime start, DateTime end, uint offset, string location, string? description = null)
         {
                 string Response = "Event Received: " + name + " - " + start;
+                DateTimeOffset startOffset = DateTimeOffset.UtcNow.AddDays(1);
+                DateTimeOffset endOffset = DateTimeOffset.UtcNow.AddDays(2);
 
                 var guild = _client.GetGuild(_guildId);
-                await guild.CreateEventAsync(name, DateTimeOffset.UtcNow.AddDays(1),  GuildScheduledEventType.External, endTime: DateTimeOffset.UtcNow.AddDays(2), location: "Space");
+                await guild.CreateEventAsync(name, startOffset,  GuildScheduledEventType.External, endTime: endOffset, location: location, description: description);
                 await RespondAsync(Response);
         }
     }
