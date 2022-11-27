@@ -1,7 +1,5 @@
-using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace alfred
@@ -27,7 +25,6 @@ namespace alfred
         {
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
             _client.InteractionCreated += HandleInteraction;
-            //_client.SlashCommandExecuted += HandleSlashCommand;
         }
 
         private async Task HandleInteraction(SocketInteraction arg)
