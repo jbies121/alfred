@@ -9,7 +9,8 @@ namespace alfred.Modules
     {
         private readonly DiscordSocketClient _client;
         private readonly IConfigurationRoot _config;
-        private ulong _guildId;
+        private readonly ulong _guildId;
+        private readonly SocketGuild _guild;
 
         public InteractionModule(
             DiscordSocketClient client,
@@ -19,6 +20,7 @@ namespace alfred.Modules
             _client = client;
             _config = config;
             _guildId = UInt64.Parse(_config["testGuild"]);
+            _guild = _client.GetGuild(_guildId);
         }
         
         [SlashCommand("slap", "Remind Alfred who the real Bat- I mean Man of the house is..")]
@@ -36,15 +38,37 @@ namespace alfred.Modules
         }
 
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
-        public async Task HandleSessionCommand(string name, DateTime start, DateTime end, uint offset, string location, string? description = null)
+        public async Task HandleSessionCommand(string Name, DateTime Start, TimeSpan Duration, string Location, string? Description = null)
         {
-                string Response = "Event Received: " + name + " - " + start;
-                DateTimeOffset startOffset = DateTimeOffset.UtcNow.AddDays(1);
-                DateTimeOffset endOffset = DateTimeOffset.UtcNow.AddDays(2);
+                try
+                {
+                    // Calculate End time and create the scheduled event
+                    DateTime End = Start + Duration;
+                    var guildEvent = await _guild.CreateEventAsync(Name, Start,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
+                    // Get URL of scheduled event
+                    string eventURL = "https://discord.com/events/" + _guildId + "/" + guildEvent.Id;
+                    // Build Embed Response
+                    string Response = "New Session: " + Name;
+                    EmbedBuilder embed = new EmbedBuilder
+                    {
+                        // Embed property can be set within object initializer
+                        Title = Response,
+                    };
+                        // Or with methods
+                    embed.WithAuthor(Context.Client.CurrentUser)
+                        .WithFooter(footer => footer.Text = Context.Client.CurrentUser.ToString())
+                        .WithColor(Color.Green)
+                        .WithDescription(Description)
+                        .WithUrl(eventURL)
+                        .WithCurrentTimestamp();
 
-                var guild = _client.GetGuild(_guildId);
-                await guild.CreateEventAsync(name, startOffset,  GuildScheduledEventType.External, endTime: endOffset, location: location, description: description);
-                await RespondAsync(Response);
+                    //Your embed needs to be built before it is able to be sent
+                    await RespondAsync(embed: embed.Build());
+                }
+                catch (Exception ex)
+                {
+                    await RespondAsync(ex.ToString());
+                }
         }
     }
 }
