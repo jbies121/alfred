@@ -40,7 +40,7 @@ namespace alfred.Modules
             {
                 // Embed property can be set within object initializer
                 Title = Response,
-                ThumbnailUrl = "https://cdn.discordapp.com/attachments/214118660896194561/1040866115024326816/Buckaroo_Banzai_hogwarts_221c63f9-d003-42c8-a279-26169085a861.png"
+                ThumbnailUrl = guildEvent.Guild.IconUrl
             };
                 // Or with methods
             embed.WithFooter(footer => footer.Text = "Event Scheduled")
