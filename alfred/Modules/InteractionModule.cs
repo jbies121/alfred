@@ -44,6 +44,7 @@ namespace alfred.Modules
             };
                 // Or with methods
             embed.WithFooter(footer => footer.Text = "Event Scheduled")
+                .WithAuthor(Context.User)
                 .WithColor(Color.Green)
                 .WithDescription(Description)
                 .AddField("Starts",startTimeCode)
