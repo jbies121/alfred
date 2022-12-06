@@ -29,7 +29,7 @@ namespace alfred.Modules
             try 
             {
                 TimeZoneInfo UserTimezone = TimeZoneInfo.FindSystemTimeZoneById(Timezone);
-                DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(Start, UserTimezone);
+                DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(Start, UserTimezone, TimeZoneInfo.Utc);
                 // Calculate End time and create the scheduled event
                 DateTimeOffset End = ConvertedStart + Duration;
                 var guildEvent = await _guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
