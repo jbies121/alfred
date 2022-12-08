@@ -1,28 +1,10 @@
 using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
 
 namespace alfred.Modules
 {
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
-        private readonly DiscordSocketClient _client;
-        private readonly IConfigurationRoot _config;
-        private readonly ulong _guildId;
-        private readonly SocketGuild _guild;
-
-        public InteractionModule(
-            DiscordSocketClient client,
-            IConfigurationRoot config
-        )
-        {
-            _client = client;
-            _config = config;
-            _guildId = UInt64.Parse(_config["testGuild"]);
-            _guild = _client.GetGuild(_guildId);
-        }
-
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
         public async Task HandleSessionCommand(string Name, DateTime Start, String Timezone, TimeSpan Duration, string Location, string? Description = null)
         {
@@ -32,9 +14,9 @@ namespace alfred.Modules
                 DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(Start, UserTimezone, TimeZoneInfo.Utc);
                 // Calculate End time and create the scheduled event
                 DateTimeOffset End = ConvertedStart + Duration;
-                var guildEvent = await _guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
+                var guildEvent = await Context.Guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
                 // Get URL of scheduled event
-                string eventURL = "https://discord.com/events/" + _guildId + "/" + guildEvent.Id;
+                string eventURL = "https://discord.com/events/" + Context.Guild.Id + "/" + guildEvent.Id;
                 // Get server profile or default user profile
                 string AuthorName = Context.Guild.GetUser(Context.User.Id).Nickname != null ? Context.Guild.GetUser(Context.User.Id).Nickname : Context.User.Username;
                 string AuthorIcon = Context.Guild.GetUser(Context.User.Id).GetGuildAvatarUrl() != null ? Context.Guild.GetUser(Context.User.Id).GetGuildAvatarUrl() : Context.User.GetAvatarUrl();
