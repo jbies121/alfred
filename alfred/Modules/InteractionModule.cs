@@ -35,6 +35,9 @@ namespace alfred.Modules
                 var guildEvent = await _guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
                 // Get URL of scheduled event
                 string eventURL = "https://discord.com/events/" + _guildId + "/" + guildEvent.Id;
+                // Get server profile or default user profile
+                string AuthorName = Context.Guild.GetUser(Context.User.Id).Nickname != null ? Context.Guild.GetUser(Context.User.Id).Nickname : Context.User.Username;
+                string AuthorIcon = Context.Guild.GetUser(Context.User.Id).GetGuildAvatarUrl() != null ? Context.Guild.GetUser(Context.User.Id).GetGuildAvatarUrl() : Context.User.GetAvatarUrl();
                 // Build Embed Response
                 string Response = "New Session: " + Name;
                 string startTimeCode = "<t:" + ConvertedStart.ToUnixTimeSeconds().ToString() + ":R>";
@@ -47,7 +50,7 @@ namespace alfred.Modules
                 };
                     // Or with methods
                 embed.WithFooter(footer => footer.Text = Location)
-                    .WithAuthor(Context.User)
+                    .WithAuthor(AuthorName, AuthorIcon)
                     .WithColor(Color.Green)
                     .WithDescription(Description)
                     .AddField("Starts",startTimeCode)
