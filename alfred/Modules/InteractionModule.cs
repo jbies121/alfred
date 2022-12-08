@@ -46,15 +46,15 @@ namespace alfred.Modules
                     ThumbnailUrl = guildEvent.Guild.IconUrl
                 };
                     // Or with methods
-                embed.WithFooter(footer => footer.Text = "Event Scheduled")
+                embed.WithFooter(footer => footer.Text = Location)
                     .WithAuthor(Context.User)
                     .WithColor(Color.Green)
                     .WithDescription(Description)
                     .AddField("Starts",startTimeCode)
                     .AddField("Ends",endTimeCode)
                     .WithUrl(eventURL);
-                //Your embed needs to be built before it is able to be sent
-                await RespondAsync(embed: embed.Build());
+                //Send embed with mention
+                await RespondAsync(Context.Guild.EveryoneRole.Mention,embed: embed.Build());
             }
             catch (TimeZoneNotFoundException) 
             {
