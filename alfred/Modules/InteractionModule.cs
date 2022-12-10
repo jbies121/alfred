@@ -33,7 +33,7 @@ namespace alfred.Modules
                     // Or with methods
                 embed.WithFooter(footer => footer.Text = Location)
                     .WithAuthor(AuthorName, AuthorIcon)
-                    .WithColor(new Color(08,99,157))
+                    .WithColor(Color.Blue)
                     .WithDescription(Description)
                     .AddField("Starts",startTimeCode)
                     .AddField("Ends",endTimeCode)
