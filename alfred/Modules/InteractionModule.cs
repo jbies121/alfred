@@ -12,6 +12,10 @@ namespace alfred.Modules
             {
                 TimeZoneInfo UserTimezone = TimeZoneInfo.FindSystemTimeZoneById(Timezone);
                 DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(Start, UserTimezone, TimeZoneInfo.Utc);
+                if (ConvertedStart < DateTime.Now)
+                {
+                    throw new ArgumentNullException(nameof(ConvertedStart));
+                }
                 // Calculate End time and create the scheduled event
                 DateTimeOffset End = ConvertedStart + Duration;
                 var guildEvent = await Context.Guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
@@ -43,11 +47,15 @@ namespace alfred.Modules
             }
             catch (TimeZoneNotFoundException) 
             {
-                await RespondAsync("Unable to retrieve the time zone.");
+                await RespondAsync("Unable to retrieve the time zone.", ephemeral: true);
             }
             catch (InvalidTimeZoneException) 
             {
-                await RespondAsync("Unable to retrieve the time zone.");
+                await RespondAsync("Unable to retrieve the time zone.", ephemeral: true);
+            }
+            catch (ArgumentNullException)
+            {
+                await RespondAsync("DateTime needs to be in the future, try again.", ephemeral: true);
             }
         }
     }
