@@ -6,17 +6,20 @@ namespace alfred.Modules
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
-        public async Task HandleSessionCommand(string Name, DateTime Start, String Timezone, String Duration, string Location, string? Description = null)
+        public async Task HandleSessionCommand(string Name, string Start, string Timezone, string Duration, string Location, string? Description = null)
         {
             try 
             {
+                // Parse and convert datetime
                 TimeZoneInfo UserTimezone = TimeZoneInfo.FindSystemTimeZoneById(Timezone);
-                DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(Start, UserTimezone, TimeZoneInfo.Utc);
+                DateTime ParsedStart = DateTime.Parse(Start);
+                DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(ParsedStart, UserTimezone, TimeZoneInfo.Utc);
+                TimeSpan DurationSpan = TimeSpan.Parse(Duration);
+                // Throw an exception if the start time is not in the future
                 if (ConvertedStart < DateTime.Now)
                 {
                     throw new ArgumentNullException(nameof(ConvertedStart));
                 }
-                TimeSpan DurationSpan = TimeSpan.Parse(Duration);
                 // Calculate End time and create the scheduled event
                 DateTimeOffset End = ConvertedStart + DurationSpan;
                 var guildEvent = await Context.Guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
