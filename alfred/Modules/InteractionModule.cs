@@ -6,7 +6,7 @@ namespace alfred.Modules
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
-        public async Task HandleSessionCommand(string Name, DateTime Start, String Timezone, TimeSpan Duration, string Location, string? Description = null)
+        public async Task HandleSessionCommand(string Name, DateTime Start, String Timezone, String Duration, string Location, string? Description = null)
         {
             try 
             {
@@ -16,8 +16,9 @@ namespace alfred.Modules
                 {
                     throw new ArgumentNullException(nameof(ConvertedStart));
                 }
+                TimeSpan DurationSpan = TimeSpan.Parse(Duration);
                 // Calculate End time and create the scheduled event
-                DateTimeOffset End = ConvertedStart + Duration;
+                DateTimeOffset End = ConvertedStart + DurationSpan;
                 var guildEvent = await Context.Guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
                 // Get URL of scheduled event
                 string eventURL = "https://discord.com/events/" + Context.Guild.Id + "/" + guildEvent.Id;
@@ -56,6 +57,10 @@ namespace alfred.Modules
             catch (ArgumentNullException)
             {
                 await RespondAsync("DateTime needs to be in the future, try again.", ephemeral: true);
+            }
+            catch (FormatException)
+            {
+                await RespondAsync("TimeSpan not in a valid format.", ephemeral: true);
             }
         }
     }
