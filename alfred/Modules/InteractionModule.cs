@@ -30,7 +30,7 @@ namespace alfred.Modules
                 string AuthorIcon = Context.Guild.GetUser(Context.User.Id).GetGuildAvatarUrl() != null ? Context.Guild.GetUser(Context.User.Id).GetGuildAvatarUrl() : Context.User.GetAvatarUrl();
                 // Build Embed Response
                 string Response = "New Session: " + Name;
-                string startTimeCode = "<t:" + ConvertedStart.ToUnixTimeSeconds().ToString() + ":R>";
+                string startTimeCode = "<t:" + ConvertedStart.ToUnixTimeSeconds().ToString() + ":F>";
                 string endTimeCode = "<t:" + End.ToUnixTimeSeconds().ToString() + ":R>";
                 EmbedBuilder embed = new EmbedBuilder
                 {
