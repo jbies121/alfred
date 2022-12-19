@@ -19,7 +19,7 @@ namespace alfred.Modules
                 if (!(Start.Contains("-") || Start.Contains("/")))
                 {
                     var UserTimezoneNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, UserTimezone);
-                    if (UserTimezoneNow.Day < ConvertedStart.Day)
+                    if (UserTimezoneNow.Day - ConvertedStart.Day == -2)
                     {
                         ConvertedStart = ConvertedStart - TimeSpan.FromDays(1);
                     }
