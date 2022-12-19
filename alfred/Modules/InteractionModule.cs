@@ -15,6 +15,15 @@ namespace alfred.Modules
                 DateTime ParsedStart = DateTime.Parse(Start);
                 DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(ParsedStart, UserTimezone, TimeZoneInfo.Utc);
                 TimeSpan DurationSpan = TimeSpan.Parse(Duration);
+                // Try to determine if the user supplied a time or a date
+                if (!(Start.Contains("-") || Start.Contains("/")))
+                {
+                    var UserTimezoneNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, UserTimezone);
+                    if (UserTimezoneNow.Day < ConvertedStart.Day)
+                    {
+                        ConvertedStart = ConvertedStart - TimeSpan.FromDays(1);
+                    }
+                }
                 // Throw an exception if the start time is not in the future
                 if (ConvertedStart < DateTime.Now)
                 {
