@@ -24,14 +24,11 @@ namespace alfred.Modules
                         ConvertedStart = ConvertedStart - TimeSpan.FromDays(1);
                     }
                 }
-                // Throw an exception if the start time is not in the future
-                if (ConvertedStart < DateTime.Now)
-                {
-                    throw new ArgumentNullException(nameof(ConvertedStart));
-                }
+                // Handle Start time from the past
+                DateTimeOffset GuildStartTime = ConvertedStart < DateTime.Now ? DateTimeOffset.Now.AddMinutes(1) : ConvertedStart;
                 // Calculate End time and create the scheduled event
                 DateTimeOffset End = ConvertedStart + DurationSpan;
-                var guildEvent = await Context.Guild.CreateEventAsync(Name, ConvertedStart,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
+                var guildEvent = await Context.Guild.CreateEventAsync(Name, GuildStartTime,  GuildScheduledEventType.External, endTime: End, location: Location, description: Description);
                 // Get URL of scheduled event
                 string eventURL = "https://discord.com/events/" + Context.Guild.Id + "/" + guildEvent.Id;
                 // Get server profile or default user profile
