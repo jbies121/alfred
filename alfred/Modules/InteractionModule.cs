@@ -10,12 +10,22 @@ namespace alfred.Modules
         {
             try 
             {
-                // Parse and convert datetime
+                // Parse and convert datetime, handle 'now' as an input
                 TimeZoneInfo UserTimezone = TimeZoneInfo.FindSystemTimeZoneById(Timezone);
-                DateTime ParsedStart = DateTime.Parse(Start);
-                DateTimeOffset ConvertedStart = TimeZoneInfo.ConvertTime(ParsedStart, UserTimezone, TimeZoneInfo.Utc);
+                DateTimeOffset ConvertedStart;
+                // Take "now" as an input
+                if (string.Equals(Start, "now", StringComparison.OrdinalIgnoreCase))
+                {
+                    ConvertedStart = DateTimeOffset.UtcNow.AddMinutes(1);
+                }
+                else
+                {
+                    DateTime ParsedStart = DateTime.Parse(Start);
+                    ConvertedStart = TimeZoneInfo.ConvertTime(ParsedStart, UserTimezone, TimeZoneInfo.Utc);
+                }
+
                 TimeSpan DurationSpan = TimeSpan.Parse(Duration);
-                // Try to determine if the user supplied a time or a date
+                // If user did not supply a date and the converted time is >2 days ahead of the source timezone, jump back a day.
                 if (!(Start.Contains("-") || Start.Contains("/")))
                 {
                     var UserTimezoneNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, UserTimezone);
