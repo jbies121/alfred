@@ -6,7 +6,7 @@ namespace alfred.Modules
     public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("session", "Alfred, I want to play with my Bat-friends.")]
-        public async Task HandleSessionCommand([Summary(description: "Name of your session")]string Name, [Summary(description: "ex. 'now', '6:00 PM', or '2023-01-31 13:00'")]string Start, [Summary(description: "ex. 'Eastern Standard Time', 'EST'")]string Timezone, [Summary(description: "ex. '1:00'")]string Duration, [Summary(description: "Where is the session located?")]string Location, [Summary(description: "Any other details to mention?")]string? Description = null)
+        public async Task HandleSessionCommand([Summary(description: "Name of your session")]string Name, [Summary(description: "ex. 'now', '6:00 PM', or '2023-01-31 13:00'")]string Start, [Summary(description: "ex. 'Eastern Standard Time', 'EST'")]string Timezone, [Summary(description: "ex. '1:00' is 1 hour.")]string Duration, [Summary(description: "Where is the session located?")]string Location, [Summary(description: "Any other details to mention?")]string? Description = null)
         {
             try 
             {
