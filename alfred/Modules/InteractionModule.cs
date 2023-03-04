@@ -82,5 +82,35 @@ namespace alfred.Modules
                 await RespondAsync("Duration not in a valid format.", ephemeral: true);
             }
         }
+        
+        public enum Series {"F1","F3"};
+        [SlashCommand("penalties", "Alfred, who has the most Bat-Penalties?")]
+        public async Task HandleSessionCommand([Summary(description: "Which Series? F1 or F3")]enum Series)
+        {
+            string Description = "Current penalty point standings:"
+            var res = File
+                .ReadLines("penalty.txt")
+                .Select((v, i) => new {Index = i, Value = v})
+                .GroupBy(p => p.Index / 2)
+                .ToDictionary(g => g.First().Value, g => g.Last().Value);
+
+            EmbedBuilder embed = new EmbedBuilder
+                {
+                    // Embed property can be set within object initializer
+                    Title = "Penalty Point Standings",
+                    ThumbnailUrl = guildEvent.Guild.IconUrl
+                };
+                    // Or with methods
+                embed.WithFooter(footer => footer.Text = Location)
+                    .WithColor(Color.Red)
+                    .WithDescription(Description)
+                
+                foreach (string driver in res)
+                {
+                    embed.AddField(driver, driver.Value)
+                }
+                //Send embed with mention
+                await RespondAsync(Context.Guild.EveryoneRole.Mention,embed: embed.Build());
+        }
     }
 }
