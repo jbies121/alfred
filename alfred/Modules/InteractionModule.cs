@@ -124,11 +124,11 @@ namespace alfred.Modules
             [Summary(description: "Which Series? F1 or F3")] string Series
         )
         {
-            string Description = "Current penalty point standings:";
-            Dictionary<string, string> res = File.ReadLines("penalty.txt")
-                .Select((v, i) => new { Index = i, Value = v })
-                .GroupBy(p => p.Index / 2)
-                .ToDictionary(g => g.First().Value, g => g.Last().Value);
+            string Description = "Current season penalty points for " + Series + " series:";
+            string penalty_path = Series == "F1" ? "penalty-f1.txt" : "penalty-f3.txt";
+            Dictionary<string, string> result = File.ReadAllLines("penalty-f1.txt")
+                .Select(x => x.Split('='))
+                .ToDictionary(x => x[0], x => x[1]);
 
             EmbedBuilder embed = new EmbedBuilder
             {
@@ -138,13 +138,25 @@ namespace alfred.Modules
             };
             // Or with methods
             embed
-                .WithFooter(footer => footer.Text = "This is a footer")
+                .WithFooter(
+                    footer =>
+                        footer.Text = "Check for punishment discord roles if you have one to serve."
+                )
                 .WithColor(Color.Red)
                 .WithDescription(Description);
 
-            foreach (KeyValuePair<string, string> driver in res)
+            foreach (KeyValuePair<string, string> driver in result)
             {
-                embed.AddField(driver.Key, driver.Value);
+                string box =
+                    @"
+"
+                    + "<:greenflag:1007774467872796832>  "
+                    + driver.Key
+                    + " - "
+                    + driver.Value
+                    + @"
+";
+                embed.AddField("Penalties", box);
             }
             //Send embed with mention
             await RespondAsync(Context.Guild.EveryoneRole.Mention, embed: embed.Build());
