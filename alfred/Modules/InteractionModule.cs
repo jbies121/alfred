@@ -125,11 +125,17 @@ namespace alfred.Modules
         )
         {
             string Description = "Current season penalty points for " + Series + " series:";
+            // Set path based on series selected
             string penalty_path = Series == "F1" ? "penalty-f1.txt" : "penalty-f3.txt";
-            Dictionary<string, string> result = File.ReadAllLines("penalty-f1.txt")
+            // Read penalties from file
+            Dictionary<string, string> result = File.ReadAllLines(penalty_path)
                 .Select(x => x.Split('='))
                 .ToDictionary(x => x[0], x => x[1]);
-
+            // Sort by value
+            result = result
+                .OrderByDescending(x => Int32.Parse(x.Value))
+                .ToDictionary(x => x.Key, x => x.Value);
+            // Create Embed
             EmbedBuilder embed = new EmbedBuilder
             {
                 // Embed property can be set within object initializer
@@ -137,6 +143,8 @@ namespace alfred.Modules
                 ThumbnailUrl = Context.Guild.IconUrl
             };
             // Or with methods
+            string box = "";
+            string flag = "";
             embed
                 .WithFooter(
                     footer =>
@@ -144,20 +152,43 @@ namespace alfred.Modules
                 )
                 .WithColor(Color.Red)
                 .WithDescription(Description);
-
+            // Create penalty 'box' listing driver penalties. This involves a flag, the driver and their penalty score.
             foreach (KeyValuePair<string, string> driver in result)
             {
-                string box =
+                switch (Int32.Parse(driver.Value))
+                {
+                    case var expression when Int32.Parse(driver.Value) < 5:
+                        flag = "<:greenflag:1007774467872796832>";
+                        break;
+                    case var expression when Int32.Parse(driver.Value) >= 5:
+                        flag = "<:yellowflag:1081738960306450532>";
+                        break;
+                    case var expression when Int32.Parse(driver.Value) >= 10:
+                        flag = "<:yellowflag:1081738960306450532>";
+                        break;
+                    case var expression when Int32.Parse(driver.Value) >= 15:
+                        flag = "<:redflag:1081738987988852789>";
+                        break;
+                    case var expression when Int32.Parse(driver.Value) >= 20:
+                        flag = "<:yellowflag:1081738960306450532>";
+                        break;
+                    case var expression when Int32.Parse(driver.Value) >= 25:
+                        flag = "<:blackflag:1081739006552854542>";
+                        break;
+                    case var expression when Int32.Parse(driver.Value) >= 30:
+                        flag = "<:blackandwhiteflag:1081739024286355538>";
+                        break;
+                }
+                string _box =
                     @"
 "
-                    + "<:greenflag:1007774467872796832>  "
+                    + flag
                     + driver.Key
                     + " - "
-                    + driver.Value
-                    + @"
-";
-                embed.AddField("Penalties", box);
+                    + driver.Value;
+                box += _box;
             }
+            embed.AddField("Penalties", box);
             //Send embed with mention
             await RespondAsync(Context.Guild.EveryoneRole.Mention, embed: embed.Build());
         }
