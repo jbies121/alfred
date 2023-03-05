@@ -232,7 +232,7 @@ namespace alfred.Modules
                     unserved_box = "No unserved penalties for this series.";
                 }
             }
-            else
+            else if (Series == "F3")
             {
                 foreach (var driver in sortedF3Drivers)
                 {
@@ -290,6 +290,10 @@ namespace alfred.Modules
                 {
                     unserved_box = "No unserved penalties for this series.";
                 }
+            }
+            else
+            {
+                await RespondAsync("Accepted Series are: F1 or F3");
             }
 
             // Create Embed
