@@ -218,9 +218,11 @@ namespace alfred.Modules
                             + " "
                             + driver["name"]
                             + " - "
-                            + driver[Series]["points"]
-                            + " - "
-                            + driver["F1"]["ToServe"]
+                            + driver[Series]["penalty"][driver[Series]["ToServe"].ToString()][
+                                "unserved"
+                            ]
+                            + "x "
+                            + driver[Series]["ToServe"]
                             + @"
                             ";
                     }
@@ -275,9 +277,11 @@ namespace alfred.Modules
                             + " "
                             + driver["name"]
                             + " - "
-                            + driver[Series]["points"]
-                            + " - "
-                            + driver["F3"]["ToServe"]
+                            + driver[Series]["penalty"][driver[Series]["ToServe"].ToString()][
+                                "unserved"
+                            ]
+                            + "x "
+                            + driver[Series]["ToServe"]
                             + @"
                             ";
                     }
