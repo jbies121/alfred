@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Interactions;
+using Newtonsoft.Json.Linq;
 
 namespace alfred.Modules
 {
@@ -126,15 +127,155 @@ namespace alfred.Modules
         {
             string Description = "Current season penalty points for " + Series + " series:";
             // Set path based on series selected
-            string penalty_path = Series == "F1" ? "penalty-f1.txt" : "penalty-f3.txt";
-            // Read penalties from file
-            Dictionary<string, string> result = File.ReadAllLines(penalty_path)
-                .Select(x => x.Split('='))
-                .ToDictionary(x => x[0], x => x[1]);
-            // Sort by value
-            result = result
-                .OrderByDescending(x => Int32.Parse(x.Value))
-                .ToDictionary(x => x.Key, x => x.Value);
+            JObject result = JObject.Parse(File.ReadAllText("penalties.json"));
+            // Filter for F3 drivers with unserved penalties
+            var f3DriversWithUnservedPenalties = result["season5"]["drivers"].Where(
+                driver =>
+                    driver["F3"] != null
+                    && (
+                        (int)driver["F3"]["penalty"]["ExQ"]["unserved"] > 0
+                        || (int)driver["F3"]["penalty"]["Drive-Thru"]["unserved"] > 0
+                        || (int)driver["F3"]["penalty"]["PitStart"]["unserved"] > 0
+                        || (int)driver["F3"]["penalty"]["RaceBan"]["unserved"] > 0
+                    )
+            );
+            // Filter for F1 drivers with unserved penalties
+            var f1DriversWithUnservedPenalties = result["season5"]["drivers"].Where(
+                driver =>
+                    driver["F1"] != null
+                    && (
+                        (int)driver["F1"]["penalty"]["ExQ"]["unserved"] > 0
+                        || (int)driver["F1"]["penalty"]["Drive-Thru"]["unserved"] > 0
+                        || (int)driver["F1"]["penalty"]["PitStart"]["unserved"] > 0
+                        || (int)driver["F1"]["penalty"]["RaceBan"]["unserved"] > 0
+                    )
+            );
+            // Get Drivers with penalty points
+            // Filter F1 drivers with more than 0 penalty points
+            var f1DriversWithPenalties = result["season5"]["drivers"].Where(
+                d => d["F1"] != null && d["F1"]["points"].Value<int>() > 0
+            );
+
+            // Sort F1 drivers by their penalty points in descending order
+            var sortedF1Drivers = f1DriversWithPenalties.OrderByDescending(
+                d => d["F1"]["points"].Value<int>()
+            );
+
+            // Filter F3 drivers with more than 0 penalty points
+            var f3DriversWithPenalties = result["season5"]["drivers"].Where(
+                d => d["F3"] != null && d["F3"]["points"].Value<int>() > 0
+            );
+
+            // Sort F3 drivers by their penalty points in descending order
+            var sortedF3Drivers = f3DriversWithPenalties.OrderByDescending(
+                d => d["F3"]["points"].Value<int>()
+            );
+            // Create penalty 'unserved_box' listing driver penalties. This involves a flag, the driver and their penalty score.
+            string unserved_box = "";
+            string total_box = "";
+            if (Series == "F1")
+            {
+                foreach (var driver in sortedF1Drivers)
+                {
+                    var penalty = driver["F1"]["penalty"];
+                    driver["F1"]["flag"] = "<:greenflag:1007774467872796832>";
+                    if ((int)penalty["ExQ"]["unserved"] > 0)
+                    {
+                        driver["F1"]["flag"] = "<:yellowflag:1081738960306450532>";
+                    }
+                    if ((int)penalty["Drive-Thru"]["unserved"] > 0)
+                    {
+                        driver["F1"]["flag"] = "<:blackflag:1081739006552854542>";
+                    }
+                    if ((int)penalty["PitStart"]["unserved"] > 0)
+                    {
+                        driver["F1"]["flag"] = "<:redflag:1081738987988852789>";
+                    }
+                    if ((int)penalty["RaceBan"]["unserved"] > 0)
+                    {
+                        driver["F1"]["flag"] = "<:blackandwhiteflag:1081739024286355538>";
+                    }
+
+                    total_box +=
+                        driver["F1"]["flag"]
+                        + " "
+                        + driver["name"]
+                        + " - "
+                        + driver[Series]["points"]
+                        + @"
+                    ";
+                }
+                if (f1DriversWithUnservedPenalties.Any())
+                {
+                    foreach (var driver in f1DriversWithUnservedPenalties)
+                    {
+                        unserved_box +=
+                            driver["F1"]["flag"]
+                            + " "
+                            + driver["name"]
+                            + " - "
+                            + driver[Series]["points"]
+                            + @"
+                            ";
+                    }
+                }
+                else
+                {
+                    unserved_box = "No unserved penalties for this series.";
+                }
+            }
+            else
+            {
+                foreach (var driver in sortedF3Drivers)
+                {
+                    var penalty = driver["F3"]["penalty"];
+                    driver["F3"]["flag"] = "<:greenflag:1007774467872796832>";
+                    if ((int)penalty["ExQ"]["unserved"] > 0)
+                    {
+                        driver["F3"]["flag"] = "<:yellowflag:1081738960306450532>";
+                    }
+                    if ((int)penalty["Drive-Thru"]["unserved"] > 0)
+                    {
+                        driver["F3"]["flag"] = "<:blackflag:1081739006552854542>";
+                    }
+                    if ((int)penalty["PitStart"]["unserved"] > 0)
+                    {
+                        driver["F3"]["flag"] = "<:redflag:1081738987988852789>";
+                    }
+                    if ((int)penalty["RaceBan"]["unserved"] > 0)
+                    {
+                        driver["F3"]["flag"] = "<:blackandwhiteflag:1081739024286355538>";
+                    }
+
+                    total_box +=
+                        driver["F3"]["flag"]
+                        + " "
+                        + driver["name"]
+                        + " - "
+                        + driver[Series]["points"]
+                        + @"
+                    ";
+                }
+                if (f3DriversWithUnservedPenalties.Any())
+                {
+                    foreach (var driver in f3DriversWithUnservedPenalties)
+                    {
+                        unserved_box +=
+                            driver["F3"]["flag"]
+                            + " "
+                            + driver["name"]
+                            + " - "
+                            + driver[Series]["points"]
+                            + @"
+                            ";
+                    }
+                }
+                else
+                {
+                    unserved_box = "No unserved penalties for this series.";
+                }
+            }
+
             // Create Embed
             EmbedBuilder embed = new EmbedBuilder
             {
@@ -143,52 +284,17 @@ namespace alfred.Modules
                 ThumbnailUrl = Context.Guild.IconUrl
             };
             // Or with methods
-            string box = "";
-            string flag = "";
             embed
                 .WithFooter(
                     footer =>
-                        footer.Text = "Check for punishment discord roles if you have one to serve."
+                        footer.Text =
+                            "Unserved penalties must be served at the next event participated in."
                 )
                 .WithColor(Color.Red)
                 .WithDescription(Description);
-            // Create penalty 'box' listing driver penalties. This involves a flag, the driver and their penalty score.
-            foreach (KeyValuePair<string, string> driver in result)
-            {
-                switch (Int32.Parse(driver.Value))
-                {
-                    case var expression when Int32.Parse(driver.Value) < 5:
-                        flag = "<:greenflag:1007774467872796832>";
-                        break;
-                    case var expression when Int32.Parse(driver.Value) >= 5:
-                        flag = "<:yellowflag:1081738960306450532>";
-                        break;
-                    case var expression when Int32.Parse(driver.Value) >= 10:
-                        flag = "<:yellowflag:1081738960306450532>";
-                        break;
-                    case var expression when Int32.Parse(driver.Value) >= 15:
-                        flag = "<:redflag:1081738987988852789>";
-                        break;
-                    case var expression when Int32.Parse(driver.Value) >= 20:
-                        flag = "<:yellowflag:1081738960306450532>";
-                        break;
-                    case var expression when Int32.Parse(driver.Value) >= 25:
-                        flag = "<:blackflag:1081739006552854542>";
-                        break;
-                    case var expression when Int32.Parse(driver.Value) >= 30:
-                        flag = "<:blackandwhiteflag:1081739024286355538>";
-                        break;
-                }
-                string _box =
-                    @"
-"
-                    + flag
-                    + driver.Key
-                    + " - "
-                    + driver.Value;
-                box += _box;
-            }
-            embed.AddField("Penalties", box);
+            embed
+                .AddField("Total Penalty Points", total_box)
+                .AddField("Unserved Penalties", unserved_box);
             //Send embed with mention
             await RespondAsync(Context.Guild.EveryoneRole.Mention, embed: embed.Build());
         }
