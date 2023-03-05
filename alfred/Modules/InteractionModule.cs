@@ -182,18 +182,22 @@ namespace alfred.Modules
                     if ((int)penalty["ExQ"]["unserved"] > 0)
                     {
                         driver["F1"]["flag"] = "<:yellowflag:1081738960306450532>";
+                        driver["F1"]["ToServe"] = "ExQ";
                     }
                     if ((int)penalty["Drive-Thru"]["unserved"] > 0)
                     {
                         driver["F1"]["flag"] = "<:blackflag:1081739006552854542>";
+                        driver["F1"]["ToServe"] = "Drive-Thru";
                     }
                     if ((int)penalty["PitStart"]["unserved"] > 0)
                     {
                         driver["F1"]["flag"] = "<:redflag:1081738987988852789>";
+                        driver["F1"]["ToServe"] = "PitStart";
                     }
                     if ((int)penalty["RaceBan"]["unserved"] > 0)
                     {
                         driver["F1"]["flag"] = "<:blackandwhiteflag:1081739024286355538>";
+                        driver["F1"]["ToServe"] = "RaceBan";
                     }
 
                     total_box +=
@@ -215,6 +219,8 @@ namespace alfred.Modules
                             + driver["name"]
                             + " - "
                             + driver[Series]["points"]
+                            + " - "
+                            + driver["F1"]["ToServe"]
                             + @"
                             ";
                     }
@@ -233,18 +239,22 @@ namespace alfred.Modules
                     if ((int)penalty["ExQ"]["unserved"] > 0)
                     {
                         driver["F3"]["flag"] = "<:yellowflag:1081738960306450532>";
+                        driver["F3"]["ToServe"] = "ExQ";
                     }
                     if ((int)penalty["Drive-Thru"]["unserved"] > 0)
                     {
                         driver["F3"]["flag"] = "<:blackflag:1081739006552854542>";
+                        driver["F3"]["ToServe"] = "Drive-Thru";
                     }
                     if ((int)penalty["PitStart"]["unserved"] > 0)
                     {
                         driver["F3"]["flag"] = "<:redflag:1081738987988852789>";
+                        driver["F3"]["ToServe"] = "PitStart";
                     }
                     if ((int)penalty["RaceBan"]["unserved"] > 0)
                     {
                         driver["F3"]["flag"] = "<:blackandwhiteflag:1081739024286355538>";
+                        driver["F3"]["ToServe"] = "RaceBan";
                     }
 
                     total_box +=
@@ -266,6 +276,8 @@ namespace alfred.Modules
                             + driver["name"]
                             + " - "
                             + driver[Series]["points"]
+                            + " - "
+                            + driver["F3"]["ToServe"]
                             + @"
                             ";
                     }
